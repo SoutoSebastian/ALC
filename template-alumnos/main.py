@@ -5,7 +5,7 @@ import pandas as pd
 def proyectarPts(T, wz):
     assert(T.shape == (2,2)) # chequeo de matriz 2x2
     assert(T.shape[1] == wz.shape[0]) # multiplicacion matricial valida   
-    xy = None
+    xy = T @ wz
     ############### Insert code here!! ######################3    
 
     ############### Insert code here!! ######################3
