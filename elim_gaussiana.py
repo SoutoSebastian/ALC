@@ -16,15 +16,27 @@ def elim_gaussiana(A):
         return
     
     ## desde aqui -- CODIGO A COMPLETAR
+    L = np.eye(n) #iniciamos L como una matriz identidad de n x n
 
+    #Eliminacion gaussiana
+    for i in range(n): #itera sobre columnas...
+        if Ac[i, i, ] == 0:
+            print(f'Pivote {i} es nulo')
+            return
 
-
-
+        for j in range(i+1,n):
+            factor = Ac[j, i]/Ac[i, i]
+            L[j, i] = factor #guardamos el factor en la matriz L...
+            #cant_op = # ?
+            Ac[j, i:] = Ac[j, i:] - factor*Ac[i, i:]
+            #cant_op #
+            print(f'Matriz L, despues del paso ({i}, {j})')
+            print(L)
 
                 
     ## hasta aqui
             
-    L = np.tril(Ac,-1) + np.eye(A.shape[0]) 
+    #L = np.tril(Ac,-1) + np.eye(A.shape[0]) 
     U = np.triu(Ac)
     
     return L, U, cant_op
