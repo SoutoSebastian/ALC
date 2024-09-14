@@ -55,6 +55,10 @@ def elim_gaussianaConPermutaciones(A):
 
 
             Ac= permutacion @ Ac
+            
+            for k in range (i):
+                L[0:,k] = (permutacion @ L[0:,k])
+                print(f'L despues de permutar \n {L}')    
 
             for j in range(i+1, n):
                 factor = Ac[j,i] / Ac[i,i]#aca va q multiplico entre las matrices para q de 0.
@@ -63,10 +67,6 @@ def elim_gaussianaConPermutaciones(A):
                 #cant_operaciones #... n por algo
                 print(f"Matriz L despuse del paso ({j},{i})")
                 print(L) 
-            
-            for k in range (i):
-                L[0:,k] = (permutacion @ L[0:,k])
-                print(f'L despues de permutar \n {L}')    
 
         else:
             for j in range(i+1, n):
@@ -102,10 +102,10 @@ matrizEjemplo2 = np.array([[1,2,3],[1,2,5],[3,4,1]])
 matrizEjemplo3 = np.array([[0,2,1,3,4],[1,-1,2,0,1],[0,0,0,1,-1],[2,0,3,4,2],[3,1,4,2,0]])
 matrizEjemplo4 = np.array([[0,2,1,3,4,5],[1,-1,2,0,1,2],[0,0,0,1,-1,3],[2,0,3,4,2,1],[0,0,1,2,0,1],[3,1,4,2,0,0]])
 
-L, U, cant_op, P = elim_gaussianaConPermutaciones(matrizEjemplo4)
+L, U, cant_op, P = elim_gaussianaConPermutaciones(matrizEjemplo)
 print(f'P:{P}')
 print(f'L:{L}')
 print(f'U:{U}')
-print(P@matrizEjemplo4)
+print(P@matrizEjemplo)
 print(L@U)
 
