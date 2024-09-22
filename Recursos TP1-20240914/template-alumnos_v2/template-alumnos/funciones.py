@@ -1,6 +1,8 @@
 import numpy as np
 
 def calcularLU(A):
+    """Realiza la descomposicón PA = LU de una matriz A. Como parametro rescibe una matriz A y devuelve L (triangular inferior
+       con 1s en la diagonal), U (triangular superior) y P (matriz de permutación)."""
     m=A.shape[0]
     n=A.shape[1]
     Ac = A.copy()
@@ -9,23 +11,19 @@ def calcularLU(A):
         print('Matriz no cuadrada')
         return
     
-    ## desde aqui -- CODIGO A COMPLETAR
     L = np.eye(n) #inciamos L de nxn
 
     matricesPermutacion=[]
 
-    print("esto es n--->",n)
 
     #Gaussian Elimination
     for i in range(n):
         if Ac[i,i]==0:
-            print(f"Pivote {i} es nulo")
             
             listaDePivotes:list[tuple] = []
             for j in range(i+1,n):
                 listaDePivotes.append((Ac[j,i],j))   #listaDePivotes.append((elemento,indice)), tupla = (elemento,indice)
 
-            print(listaDePivotes)
 
             newPivoteIndice= listaDePivotes[0]
             
@@ -33,7 +31,7 @@ def calcularLU(A):
                     
                 if newPivoteIndice[0]<= listaDePivotes[k][0]:
                     newPivoteIndice = listaDePivotes[k]
-                print(newPivoteIndice)
+                    
             #ahora resta crear una identidad con las filas intercambiadas por los indices newPivote[]
 
 
@@ -51,7 +49,7 @@ def calcularLU(A):
             
             for k in range (i):
                 L[0:,k] = (permutacion @ L[0:,k])
-                print(f'L despues de permutar \n {L}')    
+                    
 
         for j in range(i+1, n):
             factor = Ac[j,i] / Ac[i,i]#aca va q multiplico entre las matrices para q de 0.
@@ -77,6 +75,17 @@ def multiplicarPermutaciones(matricesPermutaciones:list):
 
     return P
 
+def escalonar_filas1(M):
+    n= np.shape(M)[0]
+    
+    for i in range(n):
+        for j in range(i+1, n):
+            factor = M[j,i] / M[i,i]#aca va q multiplico entre las matrices para q de 0.
+            M[j,:] = M[j,:]  - factor*M[i,:]
+    
+    return M
+            
+            
 def back_substitution(A_aug):
     """
     Realiza la sustitución hacia atrás para obtener la identidad en el lado izquierdo
@@ -143,6 +152,7 @@ def escalonar_filas(M):
     # y la primera columna (de ceros)
     return np.block([ [A[:1,:]], [ A[1:,:1], B] ])
 
+    
 
 def inversaLU(L,U, P = None):
     #PA = LU -> A = P^-1 LU -> A^-1 = (LU)^-1 P -> A^-1 = U^-1 L^-1 P 
@@ -156,7 +166,7 @@ def inversaLU(L,U, P = None):
     #inversa L
     L_aumentada = np.c_[L,Id]
     L_inv = escalonar_filas(L_aumentada)
-    L_inv = back_substitution(L_inv)
+    #L_inv = back_substitution(L_inv)
     
     Inv = U_inv @ L_inv @ P
     print(np.shape(Inv))
@@ -174,3 +184,26 @@ def resolverSistema(A,d):
     p = ML_inv @ d
     
     return p
+
+
+#######TESTTING:
+#normal
+M1 = np.array([[1,0,0],[1,1,0],[2,4,1]])
+M2 = np.array([[1,0,0,0],[3,1,0,0],[-4,4,1,0],[0,2,0,1]])
+
+# print(f'op1 : \n {escalonar_filas1(M1)}')
+# print(f'op2 : \n {escalonar_filas(M1)}')
+
+#aumentada
+Id3 = np.eye(3)
+Id4 = np.eye(4)
+
+M1_a = np.hstack((M1, Id3))
+
+# print(f'op1 : \n {escalonar_filas1(M1_a)}')
+# print(f'op2 : \n {escalonar_filas(M1_a)}')
+
+M2_a = np.hstack((M2, Id4 ))
+
+print(f'op1 : \n {escalonar_filas1(M2_a)}')
+print(f'op2 : \n {escalonar_filas(M2_a)}')
