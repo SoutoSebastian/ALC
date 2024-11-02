@@ -2,7 +2,7 @@
 
 import numpy as np
 
-def metodo_potencia (A):
+def metodo_potencia (A, tol = 0.0001):
     n = np.shape(A)[0]
     tol = 0.0001                    #tolerancia pedida para que se deje de ejecutar el while
     dif = tol + 1
@@ -17,14 +17,12 @@ def metodo_potencia (A):
         
     autovals = np.zeros(n)
     product = A@v
+
+    #coeficiente de Rayleigh:
+    w = A @ v
+    autovalor = ((v.T @ w) / (v.T @ v))[0][0]
     
-    for i in range (n):                                 #para calcular el autovalor hago la division de cada coordenada de la multiplicacion de A por v y v. Y luego saco el promedio
-        autovals[i] = product[i]/v[i]
-    
-    autovalor = np.mean(autovals)    
-    #autovalor = product[1]/v[1]
-    
-    return autovalor
+    return autovalor, v
 
 A = np.array([[2,3],[2,1]]) 
 print(metodo_potencia(A))
