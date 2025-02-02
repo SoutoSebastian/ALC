@@ -1,8 +1,13 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+Eliminacion Gausianna
+"""
 import numpy as np
 
-def calcularLU(A):
-    """Realiza la descomposicón PA = LU de una matriz A. Como parametro rescibe una matriz A y devuelve L (triangular inferior
-       con 1s en la diagonal), U (triangular superior) y P (matriz de permutación)."""
+
+def elim_gaussianaConPermutaciones(A):
+    cant_op = 0
     m=A.shape[0]
     n=A.shape[1]
     Ac = A.copy()
@@ -11,27 +16,31 @@ def calcularLU(A):
         print('Matriz no cuadrada')
         return
     
+    ## desde aqui -- CODIGO A COMPLETAR
     L = np.eye(n) #inciamos L de nxn
 
     matricesPermutacion=[]
 
+    print("esto es n--->",n)
 
     #Gaussian Elimination
     for i in range(n):
         if Ac[i,i]==0:
+            # ...
+            # aca supongo q tengo q hacer la permutacion 
+            print(f"Pivote {i} es nulo")
             
             listaDePivotes:list[tuple] = []
             for j in range(i+1,n):
                 listaDePivotes.append((Ac[j,i],j))   #listaDePivotes.append((elemento,indice)), tupla = (elemento,indice)
 
+            print(listaDePivotes)
 
             newPivoteIndice= listaDePivotes[0]
-            
             for k in range(len(listaDePivotes)-1):
-                    
                 if newPivoteIndice[0]<= listaDePivotes[k][0]:
                     newPivoteIndice = listaDePivotes[k]
-                    
+
             #ahora resta crear una identidad con las filas intercambiadas por los indices newPivote[]
 
 
@@ -47,25 +56,34 @@ def calcularLU(A):
 
             Ac= permutacion @ Ac
             
-            for k in range (i):
-                L[0:,k] = (permutacion @ L[0:,k])
-                    
+            for k in range (i):                             #con este for le aplico las permutaciones a todos los M_k tal que k=<i, es como calcular M moño
+                L[0:,k] = (permutacion @ L[0:,k])           # las inversas de los M moño forman L
+                print(f'L despues de permutar \n {L}')
 
+        
         for j in range(i+1, n):
             factor = Ac[j,i] / Ac[i,i]#aca va q multiplico entre las matrices para q de 0.
             L[j,i] = factor # guardamos el factor en la matriz L 
             Ac[j,i:] = Ac[j,i:]  - factor*Ac[i,i:]
-            
+            #cant_operaciones #... n por algo
+            print(f"Matriz L despuse del paso ({j},{i})")
+            print(L) 
 
 
-    if(len(matricesPermutacion)>=1):
+    if(len(matricesPermutacion)>=1):                            ##me fijo que haya permutaciones como para calcular P, sino devuelvo identidad
         P=multiplicarPermutaciones(matricesPermutacion)
     else:
         P = np.eye(n)
+    ## hasta aqui
             
+    #L = np.tril(Ac,-1) + np.eye(A.shape[0]) 
+    print("esto queda despues de todos los pasos --->\n",Ac)
     U = np.triu(Ac)
     
-    return L, U, P
+    
+    return L, U, cant_op, P
+
+
 
 def multiplicarPermutaciones(matricesPermutaciones:list):
     P=matricesPermutaciones[len(matricesPermutaciones)-1]
@@ -75,17 +93,47 @@ def multiplicarPermutaciones(matricesPermutaciones:list):
 
     return P
 
-def escalonar_filas1(M):
-    n= np.shape(M)[0]
+
+matrizEjemplo = np.array([[1,2,3,4],[1,2,5,6],[1,3,5,2],[1,3,5,4]])
+matrizEjemplo2 = np.array([[1,2,3],[1,2,5],[3,4,1]])
+matrizEjemplo3 = np.array([[0,2,1,3,4],[1,-1,2,0,1],[0,0,0,1,-1],[2,0,3,4,2],[3,1,4,2,0]])
+matrizEjemplo4 = np.array([[0,2,1,3,4,5],[1,-1,2,0,1,2],[0,0,0,1,-1,3],[2,0,3,4,2,1],[0,0,1,2,0,1],[3,1,4,2,0,0]])
+
+
+
+
+
+
+
+
+def ejMatriz(matriz):
+        
+
+
+    print('Matriz B \n', matriz)
     
-    for i in range(n):
-        for j in range(i+1, n):
-            factor = M[j,i] / M[i,i]#aca va q multiplico entre las matrices para q de 0.
-            M[j,:] = M[j,:]  - factor*M[i,:]
+    L,U,cant_oper,P = elim_gaussianaConPermutaciones(matriz)
     
-    return M
-            
-            
+    print('Matriz L \n', L)
+    print('Matriz U \n', U)
+    print('Cantidad de operaciones: ', cant_oper)
+    print('B=LU? ' , 'Si!' if np.allclose(np.linalg.norm(matriz - L@U, 1), 0) else 'No!')
+    print('PB=LU? ' , 'Si!' if np.allclose(np.linalg.norm(P@matriz - L@U, 1), 0) else 'No!')
+    print('Norma infinito de U: ', np.max(np.sum(np.abs(U), axis=1)) )
+
+    print("PA=\n",P@matriz)
+
+    print("LU=\n",L@U)
+
+    
+
+ejMatriz(matrizEjemplo2)
+
+
+########FUNCION INVERSA##########
+#Lo hice para ver si nos daba bien , usando las funciones del labo. back_substitution no tiene nada raro y escalonar filas es dudosa pero la podemos hacer usando
+#el codigo de arriba, donde estamos haciendo eliminacion gaussiana
+
 def back_substitution(A_aug):
     """
     Realiza la sustitución hacia atrás para obtener la identidad en el lado izquierdo
@@ -103,6 +151,7 @@ def back_substitution(A_aug):
             A_aug[j] -= A_aug[i] * A_aug[j, i]
     
     return A_aug[:, n:]
+
 
 def escalonar_filas(M):
     """ 
@@ -152,7 +201,6 @@ def escalonar_filas(M):
     # y la primera columna (de ceros)
     return np.block([ [A[:1,:]], [ A[1:,:1], B] ])
 
-    
 
 def inversaLU(L,U, P = None):
     #PA = LU -> A = P^-1 LU -> A^-1 = (LU)^-1 P -> A^-1 = U^-1 L^-1 P 
@@ -166,44 +214,15 @@ def inversaLU(L,U, P = None):
     #inversa L
     L_aumentada = np.c_[L,Id]
     L_inv = escalonar_filas(L_aumentada)
-    #L_inv = back_substitution(L_inv)
+    L_inv = back_substitution(L_inv)
     
     Inv = U_inv @ L_inv @ P
     print(np.shape(Inv))
     
     return Inv
 
-def resolverSistema(A,d):
-    ML = np.eye(np.shape(A)[0]) - A
-
-    #calculamos L, U, P y la inversa de ML:
-    L, U, P = calcularLU(ML)
-    ML_inv = inversaLU(L,U,P)
-
-    #calculamos p:
-    p = ML_inv @ d
-    
-    return p
 
 
-#######TESTTING:
-#normal
-M1 = np.array([[1,0,0],[1,1,0],[2,4,1]])
-M2 = np.array([[1,0,0,0],[3,1,0,0],[-4,4,1,0],[0,2,0,1]])
-
-# print(f'op1 : \n {escalonar_filas1(M1)}')
-# print(f'op2 : \n {escalonar_filas(M1)}')
-
-#aumentada
-Id3 = np.eye(3)
-Id4 = np.eye(4)
-
-M1_a = np.hstack((M1, Id3))
-
-# print(f'op1 : \n {escalonar_filas1(M1_a)}')
-# print(f'op2 : \n {escalonar_filas(M1_a)}')
-
-M2_a = np.hstack((M2, Id4 ))
-
-print(f'op1 : \n {escalonar_filas1(M2_a)}')
-print(f'op2 : \n {escalonar_filas(M2_a)}')
+####TEST INVERSALU
+L,U,cant_oper,P = elim_gaussianaConPermutaciones(matrizEjemplo)  #probe solo con una y da bien, a seguir testeando
+print(f'Inversa = \n {inversaLU(L,U,P)}') 
