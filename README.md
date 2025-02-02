@@ -1,3 +1,2 @@
 # ALC
-5 carne, 6 trigo y pasta, 15 papel, 36 transportacion, 37 correo y telecomunicaciones, 38 finanzas y seguros
-Notamos que la mayorìa de los sectores se encuentran en el cluster de la izquierda. Podemos interpretar que a este cluster pertenecen aquellos productos que no precisan grandes proporciones de los demas para producirse. A este cluster pertenecen sectores que su fila de produccion es igual a 0 en todas las posiciones, por ejemplo el sector 3 (mineria). No podemos establecer una relacion estrecha entre los sectores ya que, por ejemplo, a este cluster pertenece el sector de trigo y pasta y tambien el sector de finanzas y seguros. 
+Repo de la materia Algebra Lineal Computacional.
